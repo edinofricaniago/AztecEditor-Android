@@ -1,0 +1,61 @@
+orbs:
+  android: wordpress-mobile/android@dev:android-executor
+
+version: 2.1
+jobs:
+  Lint:
+    executor: 
+      name: android/default
+      api-version: "27"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: lint-cache-v1
+      - run:
+          name: Checkstyle & klint
+          command: ./gradlew --stacktrace checkstyle ktlint
+      - run:
+          name: Lint
+          command: ./gradlew --stacktrace lintRelease
+      - android/save-gradle-cache:
+          cache-prefix: lint-cache-v1
+      - store_artifacts:
+          path: aztec/build/reports
+          destination: reports
+  Unit Tests:
+    executor: 
+      name: android/default
+      api-version: "27"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - run:
+          name: Unit tests
+          command: ./gradlew --stacktrace test
+      - android/save-gradle-cache:
+          cache-prefix: tests-cache-v1
+      - android/save-test-results
+  Connected Tests:
+    executor: 
+      name: android/default
+      api-version: "27"
+    steps:
+      - checkout
+      - android/restore-gradle-cache:
+          cache-prefix: connected-tests-cache-v1
+      - run:
+          name: Build
+          command: ./gradlew assemble assembleAndroidTest
+      - run:
+          name: Run Tests
+          command: echo "Not implemented ..."
+      - android/save-gradle-cache:
+          cache-prefix: tests-cache-v1
+
+workflows:
+  AztecEditor-Android:
+    jobs:
+      - Lint
+      - Unit Tests
+      - Connected Tests

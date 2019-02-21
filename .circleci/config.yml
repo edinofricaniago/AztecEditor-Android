@@ -12,8 +12,8 @@ jobs:
       - android/restore-gradle-cache:
           cache-prefix: lint-cache-v1
       - run:
-          name: Checkstyle & klint
-          command: ./gradlew --stacktrace checkstyle ktlint
+          name: klint
+          command: ./gradlew --stacktrace ktlint
       - run:
           name: Lint
           command: ./gradlew --stacktrace lintRelease
